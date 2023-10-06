@@ -43,7 +43,7 @@ app.get('/:pageName', async (req, res) => {
         const { pageName } = req.params;
         await incrementPageView(pageName);
         
-        const db = client.db("myDatabase");
+        const db = client.db("fm-tools");
         const pageViews = db.collection("pageViews");
         const pageData = await pageViews.findOne({ page: pageName });
 
