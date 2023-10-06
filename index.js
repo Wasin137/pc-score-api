@@ -19,7 +19,7 @@ const client = new MongoClient(uri, {
   async function incrementPageView(pageName) {
     try {
         // Select the "myDatabase" database and the "pageViews" collection
-        const db = client.db("myDatabase");
+        const db = client.db("fm-tools");
         const pageViews = db.collection("pageViews");
 
         // Check if page already has an entry
