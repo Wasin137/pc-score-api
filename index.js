@@ -18,18 +18,14 @@ const client = new MongoClient(uri, {
 
   async function incrementPageView(pageName) {
     try {
-        // Select the "myDatabase" database and the "pageViews" collection
         const db = client.db("fm-tools");
         const pageViews = db.collection("pageViews");
 
-        // Check if page already has an entry
         const pageViewEntry = await pageViews.findOne({ page: pageName });
 
         if (pageViewEntry) {
-            // If the page already exists in the database, increment its view count
             await pageViews.updateOne({ page: pageName }, { $inc: { count: 1 } });
         } else {
-            // If the page doesn't exist in the database, create an entry with a count of 1
             await pageViews.insertOne({ page: pageName, count: 1 });
         }
 
@@ -37,6 +33,21 @@ const client = new MongoClient(uri, {
         console.error("Error updating page view count:", error);
     }
 }
+
+app.get('/totalviews', async (req, res) => {
+    try {
+        const db = client.db("fm-tools");
+        const pageViews = db.collection("pageViews");
+        
+        const allPageViews = await pageViews.find().toArray();
+        
+        res.json(allPageViews);
+        
+    } catch (error) {
+        console.error("Error fetching total views:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 app.get('/:pageName', async (req, res) => {
     try {
@@ -52,6 +63,7 @@ app.get('/:pageName', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
 
 const PORT = 3001;
 app.listen(process.env.PORT || PORT)
